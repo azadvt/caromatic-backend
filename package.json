@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "caromatic-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azadvt/caromatic-backend.git"
+  },
+  "author": "Azad V T",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/azadvt/caromatic-backend/issues"
+  },
+  "homepage": "https://github.com/azadvt/caromatic-backend#readme",
+  "description": ""
+}
