@@ -15,7 +15,7 @@ var cors = require('cors')
 app.use(cors())
 
 app.use('/api/admin',require('./routes/admin'))
-app.use('/api/user',require('./routes/user'))
+app.use('/api/users',require('./routes/user'))
 
 app.listen(port,()=>{
     console.log(`server started in ${port}`);
