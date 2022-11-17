@@ -2,7 +2,10 @@ const asyncHandler = require('express-async-handler')
 const jwt = require('jsonwebtoken')
 const User = require('../models/userModel')
 const bcrypt = require('bcrypt')
-
+const Stripe = require('stripe')
+const Booking = require('../models/bookingModel')
+const stripe = Stripe(process.env.STRIPE_KEY)
+const YOUR_DOMAIN = 'http://localhost:3000';
 
 
 //Generate JWT
@@ -74,4 +77,35 @@ const signup = asyncHandler(async(req,res)=>{
         res.json({message:'Register User'})
     
 })
-module.exports= {login,signup}
+
+
+const stripeCheckOut = asyncHandler(async (req, res) => {
+    const{carName,description,imageUrl,total} =  req.body.dataToServer
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price_data:{
+            currency:'inr',
+            product_data:{
+                name:carName,
+                images:[imageUrl],
+                description:description
+            },
+            unit_amount:total*100,  
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${YOUR_DOMAIN}/success`,
+      cancel_url: `${YOUR_DOMAIN}/cancel`,
+    })
+  
+    res.send({url: session.url});
+  });
+
+  const carBooking = asyncHandler(async(req,res)=>{
+    console.log(req.body);
+    const response = await Booking.create(req.body)
+  })
+module.exports= {login,signup,stripeCheckOut,carBooking}

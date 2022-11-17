@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt')
 const Admin = require('../models/adminModel')
 const Car = require('../models/carModel')
 const User = require('../models/userModel')
+
 const loginAdmin = asyncHandler(async(req,res)=>{
     const {userName,password} = req.body
   

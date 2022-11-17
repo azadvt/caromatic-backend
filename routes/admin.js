@@ -8,7 +8,7 @@ router.post('/login', loginAdmin)
 
 router.post('/add-car',adminProtect,addCar)
 
-router.get('/get-cars',adminProtect,getCar)
+router.get('/get-cars',getCar)
 
 router.delete('/delete-car',adminProtect,deleteCar)
 
