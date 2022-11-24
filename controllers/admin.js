@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const Admin = require("../models/adminModel");
 const Car = require("../models/carModel");
 const User = require("../models/userModel");
-
+const Booking = require('../models/bookingModel')
 const loginAdmin = asyncHandler(async (req, res) => {
   const { userName, password } = req.body;
 
@@ -80,7 +80,6 @@ const addCar = asyncHandler(async (req, res) => {
 const getCar = asyncHandler(async (req, res) => {
   try {
     const cars = await Car.find();
-
     res.status(200).json(cars);
   } catch (error) {
     res.status(500).json({ Err: error });
@@ -126,6 +125,7 @@ const blockUser = asyncHandler(async (req, res) => {
       throw new Error("User not found");
     }
     const user = await User.findById(req.query.id);
+    console.log(user);
     if (user.isBlocked) {
       const unBlock = await User.findByIdAndUpdate(req.query.id, {
         isBlocked: false,
@@ -152,6 +152,18 @@ const blockUser = asyncHandler(async (req, res) => {
   }
 });
 
+
+const getBookings= asyncHandler(async(req,res)=>{
+  try {
+    const bookings = await Booking.find()
+    res.status(200).json(bookings)
+
+  } catch (error) {
+    res.status(500).json({ Err: error });
+
+  }
+})
+
 module.exports = {
   loginAdmin,
   addCar,
@@ -159,4 +171,5 @@ module.exports = {
   deleteCar,
   getUsers,
   blockUser,
+  getBookings
 };

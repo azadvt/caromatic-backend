@@ -1,7 +1,7 @@
 const express = require('express')
 const router  = express.Router()
 const {adminProtect} = require('../middleware/authMiddleware')
-const { loginAdmin ,addCar,getCar,deleteCar,getUsers,blockUser}= require('../controllers/admin')
+const { loginAdmin ,addCar,getCar,deleteCar,getUsers,blockUser,getBookings}= require('../controllers/admin')
 
 
 router.post('/login', loginAdmin)
@@ -14,6 +14,9 @@ router.delete('/delete-car',adminProtect,deleteCar)
 
 router.get('/get-users',adminProtect,getUsers)
 
-router.patch('/block-user',adminProtect,blockUser)
+router.get('/block-user',adminProtect,blockUser)
+
+router.get('/get-bookings',adminProtect,getBookings)
+
 
 module.exports = router

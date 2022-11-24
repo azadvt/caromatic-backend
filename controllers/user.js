@@ -6,7 +6,8 @@ const Stripe = require("stripe");
 const Booking = require("../models/bookingModel");
 const stripe = Stripe(process.env.STRIPE_KEY);
 const YOUR_DOMAIN = "http://localhost:3000";
-
+const { ObjectId } = require('bson')
+const Car = require('../models/carModel')
 //Generate JWT
 
 const generateToken = (id) => {
@@ -24,13 +25,21 @@ const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (user && (await bcrypt.compare(password, user.password))) {
+    console.log("user",user);
+    if (user.isBlocked===false && (await bcrypt.compare(password, user.password))) {
       res.json({
         _id: user.id,
         name: user.name,
         token: generateToken(user._id),
       });
-    } else {
+    }
+
+    if(user.isBlocked){
+      console.log("blocked user");
+      res.status(403).json({message:"user is blocked"})
+     
+    } 
+    else {
       res.status(400);
       throw new Error("Invalid Credentials");
     }
@@ -50,7 +59,6 @@ const signup = asyncHandler(async (req, res) => {
     //Check if user exits
 
     const userExists = await User.findOne({ email });
-    console.log(userExists);
     if (userExists) {
       res.status(400);
       throw new Error("User already exists");
@@ -64,6 +72,7 @@ const signup = asyncHandler(async (req, res) => {
     const user = await User.create({
       name,
       email,
+      phone,
       password: hashedPassword,
     });
 
@@ -71,7 +80,6 @@ const signup = asyncHandler(async (req, res) => {
       res.status(201).json({
         _id: user.id,
         name: user.name,
-        email: user.email,
         token: generateToken(user._id),
       });
     } else {
@@ -80,13 +88,13 @@ const signup = asyncHandler(async (req, res) => {
     }
     res.json({ message: "Register User" });
   } catch (error) {
-    res.status(500).json({ Err: error });
+    res.status(500).json({ Error: error });
   }
 });
 
 const stripeCheckOut = asyncHandler(async (req, res) => {
-  try {
-    const { carName, description, imageUrl, total } = req.body.dataToServer;
+    try {
+    const { carName, description, imageUrl, total } = req.body;
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
@@ -129,10 +137,42 @@ const carBooking = asyncHandler(async (req, res) => {
 
 const getBookings = asyncHandler(async (req, res) => {
   try {
-    const bookings = await Booking.find();
+    const { userId } = req.query;
+   
+    const bookings = await Booking.aggregate([
+      {
+        '$match': {
+          'userId':  ObjectId(userId)
+        }
+      }, {
+        '$lookup': {
+          'from': 'cars', 
+          'localField': 'carId', 
+          'foreignField': '_id', 
+          'as': 'car'
+        }
+      }, {
+        '$unwind': {
+          'path': '$car'
+        }
+      }
+    ])
     res.status(200).json(bookings);
   } catch (error) {
     res.status(500).json({ Err: error });
   }
 });
-module.exports = { login, signup, stripeCheckOut, carBooking, getBookings };
+
+const filterCars = asyncHandler(async (req,res)=>{
+  try {
+
+    const { value } = req.query;
+
+    const response =  await Car.find({type:value})
+    res.status(200).json(response)
+  } catch (error) {
+    
+  }
+})
+
+module.exports = { login, signup, stripeCheckOut, carBooking, getBookings,filterCars};
