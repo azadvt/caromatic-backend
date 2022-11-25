@@ -10,7 +10,7 @@
     "stripe": "^10.17.0"
   },
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "name": "caromatic-backend",
   "version": "1.0.0",

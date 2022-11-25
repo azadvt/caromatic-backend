@@ -79,6 +79,7 @@ const addCar = asyncHandler(async (req, res) => {
 
 const getCar = asyncHandler(async (req, res) => {
   try {
+    console.log('worked get car');
     const cars = await Car.find();
     res.status(200).json(cars);
   } catch (error) {
