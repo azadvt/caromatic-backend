@@ -126,7 +126,6 @@ const blockUser = asyncHandler(async (req, res) => {
       throw new Error("User not found");
     }
     const user = await User.findById(req.query.id);
-    console.log(user);
     if (user.isBlocked) {
       const unBlock = await User.findByIdAndUpdate(req.query.id, {
         isBlocked: false,
